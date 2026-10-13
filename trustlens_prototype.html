@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustLens - Scam & Deepfake Shield</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    min-height: 100vh;
+    color: #1a1a1a;
+    padding: 20px;
+  }
+  .phone {
+    max-width: 420px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    border: 8px solid #111827;
+  }
+  .header {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    padding: 22px 20px 18px;
+    text-align: center;
+  }
+  .header .logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .header .tagline {
+    font-size: 12.5px;
+    opacity: 0.9;
+    margin-top: 4px;
+  }
+  .content { padding: 20px; min-height: 480px; }
+  .tabs {
+    display: flex;
+    background: #f1f5f9;
+    margin: 0;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+  }
+  .tab.active {
+    color: #4f46e5;
+    border-bottom: 3px solid #4f46e5;
+    background: white;
+  }
+  textarea {
+    width: 100%;
+    height: 110px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 14.5px;
+    resize: none;
+    font-family: inherit;
+    outline: none;
+  }
+  textarea:focus { border-color: #4f46e5; }
+  .examples {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .example-chip {
+    font-size: 11px;
+    background: #ede9fe;
+    color: #5b21b6;
+    padding: 6px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+  }
+  .example-chip:hover { background: #ddd6fe; }
+  .check-btn {
+    width: 100%;
+    margin-top: 14px;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .check-btn:hover { background: #4338ca; }
+  .check-btn:active { transform: scale(0.98); }
+  .result { margin-top: 18px; display: none; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .verdict-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .verdict-high { background: #fee2e2; color: #b91c1c; border: 2px solid #fca5a5; }
+  .verdict-medium { background: #fef3c7; color: #b45309; border: 2px solid #fcd34d; }
+  .verdict-low { background: #dcfce7; color: #15803d; border: 2px solid #86efac; }
+  .verdict-icon { font-size: 26px; }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    font-weight: 700;
+    margin-top: 16px;
+    margin-bottom: 6px;
+  }
+  .flag-item {
+    background: #f8fafc;
+    border-left: 3px solid #f59e0b;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #334155;
+  }
+  .action-box {
+    background: #eef2ff;
+    border-radius: 12px;
+    padding: 13px 14px;
+    font-size: 13.5px;
+    color: #3730a3;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .btn-row { display: flex; gap: 8px; margin-top: 14px; }
+  .btn-secondary {
+    flex: 1;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    padding: 11px;
+    border-radius: 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+  }
+  .btn-report {
+    flex: 1;
+    background: #dc2626;
+    border: none;
+    padding: 11px;
+    border-radius: 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+  }
+  .safeword-box {
+    background: #f0fdf4;
+    border: 2px dashed #86efac;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #166534;
+  }
+  .footer-note {
+    text-align: center;
+    font-size: 10.5px;
+    color: #94a3b8;
+    padding: 14px 20px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .trusted-circle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#4f46e5,#7c3aed);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+  }
+  .report-sent {
+    background: #f0fdf4;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 13px;
+    color: #166534;
+    text-align: center;
+    font-weight: 600;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="header">
+    <div class="logo">🛡️ TrustLens</div>
+    <div class="tagline">Is this really them? Know in seconds.</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('check')">Check</div>
+    <div class="tab" onclick="showTab('circle')">Trusted Circle</div>
+    <div class="tab" onclick="showTab('radar')">Scam Radar</div>
+  </div>
+
+  <div class="content" id="checkTab">
+    <div class="section-label">Paste a message, or describe a call/voice note</div>
+    <textarea id="inputText" placeholder="e.g. Mom, I've been in an accident, I need you to send 5 million VND to this account right now, don't tell anyone..."></textarea>
+
+    <div class="examples">
+      <button class="example-chip" onclick="fillExample('voice')">🎙️ Minh's voice-note scam</button>
+      <button class="example-chip" onclick="fillExample('phish')">🔗 Bank phishing link</button>
+      <button class="example-chip" onclick="fillExample('legit')">✅ Legit message</button>
+    </div>
+
+    <button class="check-btn" onclick="runCheck()">Check this message</button>
+
+    <div class="result" id="resultBox">
+      <div class="verdict-badge" id="verdictBadge">
+        <span class="verdict-icon" id="verdictIcon">⚠️</span>
+        <span id="verdictText">HIGH RISK</span>
+      </div>
+
+      <div class="section-label">Top red flags</div>
+      <div id="flagsList"></div>
+
+      <div class="section-label">Recommended action</div>
+      <div class="action-box" id="actionBox"></div>
+
+      <div class="safeword-box" id="safewordBox" style="display:none;">
+        🔑 <b>Safe word check:</b> Call them on their known number and ask for your family's safe word. A voice clone can't know it.
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="alertCircle()">📣 Alert Trusted Circle</button>
+        <button class="btn-report" onclick="fileReport()" id="reportBtn">🚨 One-tap report</button>
+      </div>
+      <div class="report-sent" id="reportSent"></div>
+    </div>
+  </div>
+
+  <div class="content" id="circleTab" style="display:none;">
+    <div class="section-label">Your Trusted Circle</div>
+    <div class="trusted-circle">
+      <div class="avatar">M</div>
+      <div><b style="font-size:13.5px;">Mom (Lan)</b><div style="font-size:11.5px;color:#64748b;">Safe word set ✓ · Will be alerted on High risk</div></div>
+    </div>
+    <div class="trusted-circle">
+      <div class="avatar">T</div>
+      <div><b style="font-size:13.5px;">Tuan (neighbor)</b><div style="font-size:11.5px;color:#64748b;">Safe word set ✓ · Backup contact</div></div>
+    </div>
+    <div class="section-label">Why a safe word beats a perfect deepfake</div>
+    <div class="action-box">A voice clone can copy how someone sounds. It cannot know a private word only your Trusted Circle agreed on. Ask for it live, every time money or urgency is involved.</div>
+  </div>
+
+  <div class="content" id="radarTab" style="display:none;">
+    <div class="section-label">Live scam radar (last 24 hours, anonymized)</div>
+    <div class="flag-item">📈 "Fake accident, urgent money" voice scam — 212 reports in Hanoi &amp; HCMC, up 34%</div>
+    <div class="flag-item">📈 Fake bank "biometric update" link — 158 reports nationwide</div>
+    <div class="flag-item">📈 Fake Tet subsidy message — rising fast in rural provinces</div>
+    <div class="section-label">How this helps everyone</div>
+    <div class="action-box">When many people forward the same scam pattern, TrustLens flags it as trending and warns others before they fall for it. Anonymized pattern data is also what banks and telcos subscribe to.</div>
+  </div>
+
+  <div class="footer-note">Prototype demo · Messages analyzed in memory, not stored · TrustLens does not guarantee 100% detection — it guides you to verify</div>
+</div>
+
+<script>
+function showTab(tab) {
+  document.getElementById('checkTab').style.display = tab === 'check' ? 'block' : 'none';
+  document.getElementById('circleTab').style.display = tab === 'circle' ? 'block' : 'none';
+  document.getElementById('radarTab').style.display = tab === 'radar' ? 'block' : 'none';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+const examples = {
+  voice: "Voice note from 'Mom': \"Minh, I've been in a car accident, I'm okay but I need you to send 5,000,000 VND right now to this account, please don't tell your father, I'm scared...\"",
+  phish: "URGENT: Your Vietcombank account will be LOCKED in 24 hours due to suspicious activity. Verify your identity now and update your biometric data: http://vcb-secure-verify.com/login",
+  legit: "Hi Minh, this is Vietcombank. Your monthly statement is ready to view in the app. No action needed. Thank you for banking with us."
+};
+
+function fillExample(type) {
+  document.getElementById('inputText').value = examples[type];
+  document.getElementById('resultBox').style.display = 'none';
+}
+
+function analyze(text) {
+  const t = text.toLowerCase();
+  let score = 0;
+  let flags = [];
+
+  const urgencyWords = ['right now', 'urgent', 'immediately', 'don\'t tell', 'locked', '24 hours', 'now', 'hurry', 'quickly'];
+  const moneyWords = ['send', 'transfer', 'account', 'vnd', 'money', 'biometric', 'verify your identity'];
+  const impersonationWords = ['mom', 'dad', 'son', 'daughter', 'accident', 'bank', 'police'];
+  const linkPattern = /https?:\/\/[^\s]+/;
+  const legitSignals = ['no action needed', 'statement is ready', 'thank you for banking'];
+
+  let urgencyHit = urgencyWords.some(w => t.includes(w));
+  let moneyHit = moneyWords.some(w => t.includes(w));
+  let impersonationHit = impersonationWords.some(w => t.includes(w));
+  let linkHit = linkPattern.test(t);
+  let legitHit = legitSignals.some(w => t.includes(w));
+
+  if (urgencyHit) { score += 2; flags.push('Creates urgency or pressure to act immediately'); }
+  if (moneyHit) { score += 2; flags.push('Requests money, a transfer, or sensitive account/biometric info'); }
+  if (impersonationHit && (urgencyHit || moneyHit)) { score += 2; flags.push('Claims to be a trusted relative, bank, or authority figure'); }
+  if (linkHit) { score += 2; flags.push('Contains a link to an unfamiliar or suspicious-looking domain'); }
+  if (t.includes("don't tell") || t.includes('dont tell') || t.includes('secret')) { score += 2; flags.push('Asks you to keep it secret from other family members — classic isolation tactic'); }
+
+  if (legitHit && score === 0) {
+    return { level: 'low', flags: ['No urgency language detected', 'No money or credential request', 'Matches pattern of routine account notifications'], action: 'This looks safe. As always: no link to click, no money requested. Stay alert, but no action needed here.' };
+  }
+
+  if (score >= 6) {
+    return { level: 'high', flags: flags.length ? flags : ['Multiple strong scam indicators detected'], action: 'Do NOT send money or click any link. Call the person or institution back on a number you already know and trust — never one given in this message. If this claims to be a relative, ask your family safe word.' };
+  } else if (score >= 3) {
+    return { level: 'medium', flags: flags.length ? flags : ['Some suspicious indicators detected'], action: 'Pause for 60 seconds before acting. Verify through a second channel you already trust before sending money or clicking anything.' };
+  } else {
+    return { level: 'low', flags: flags.length ? flags : ['No strong scam indicators detected'], action: 'This looks low risk, but no verdict is a guarantee. Stay alert for requests involving money or urgency.' };
+  }
+}
+
+function runCheck() {
+  const text = document.getElementById('inputText').value.trim();
+  if (!text) { alert('Please paste a message or pick an example first.'); return; }
+
+  const result = analyze(text);
+  const badge = document.getElementById('verdictBadge');
+  const icon = document.getElementById('verdictIcon');
+  const vtext = document.getElementById('verdictText');
+  const flagsList = document.getElementById('flagsList');
+  const actionBox = document.getElementById('actionBox');
+  const safewordBox = document.getElementById('safewordBox');
+  const reportBtn = document.getElementById('reportBtn');
+
+  badge.className = 'verdict-badge verdict-' + result.level;
+  flagsList.innerHTML = '';
+  result.flags.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'flag-item';
+    div.textContent = '⚑ ' + f;
+    flagsList.appendChild(div);
+  });
+  actionBox.textContent = result.action;
+
+  if (result.level === 'high') {
+    icon.textContent = '🚨'; vtext.textContent = 'HIGH RISK';
+    safewordBox.style.display = 'block';
+    reportBtn.style.display = 'block';
+  } else if (result.level === 'medium') {
+    icon.textContent = '⚠️'; vtext.textContent = 'MEDIUM RISK';
+    safewordBox.style.display = 'none';
+    reportBtn.style.display = 'block';
+  } else {
+    icon.textContent = '✅'; vtext.textContent = 'LOW RISK';
+    safewordBox.style.display = 'none';
+    reportBtn.style.display = 'none';
+  }
+
+  document.getElementById('reportSent').style.display = 'none';
+  document.getElementById('resultBox').style.display = 'block';
+}
+
+function alertCircle() {
+  alert('Alert sent to your Trusted Circle (Mom, Tuan) with the risk level and a link to this check.');
+}
+
+function fileReport() {
+  document.getElementById('reportSent').style.display = 'block';
+  document.getElementById('reportSent').textContent = '✓ Report pre-filled and routed to your bank + local cybercrime authority. Tap sent.';
+}
+</script>
+
+</body>
+</html>
