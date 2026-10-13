@@ -1,2 +1,2 @@
 # trustlens-prototype
-Scam and deepfake shield prototype
+Scam and deepfake shield prototpees
